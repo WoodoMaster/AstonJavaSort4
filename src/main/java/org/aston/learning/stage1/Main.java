@@ -1,17 +1,65 @@
 package org.aston.learning.stage1;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.aston.learning.stage1.menu.CollectionManager;
+import org.aston.learning.stage1.menu.CurrentCollectionManager;
+import org.aston.learning.stage1.menu.Menu;
+import org.aston.learning.stage1.model.Bus;
+import org.aston.learning.stage1.model.Student;
+import org.aston.learning.stage1.model.User;
+import org.aston.learning.stage1.util.ConsoleUtils;
+
+import java.util.function.Consumer;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        CollectionManager<Student> studentManager = new CollectionManager<>("Student");
+        CollectionManager<Bus> busManager = new CollectionManager<>("Bus");
+        CollectionManager<User> userManager = new CollectionManager<>("User");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        Menu mainMenu = new Menu("Главное меню");
+        Menu collectionSelectMenu = new Menu("Выбор коллекции", mainMenu.getTitle());
+        Menu fillMenu = new Menu("Заполнение коллекции", mainMenu.getTitle());
+        Menu actionsMenu = new Menu("Действия над коллекцией", mainMenu.getTitle());
+
+        /* ========================== Меню выбора коллекции ========================== */
+        collectionSelectMenu.addAction("Student", () -> selectCollection(studentManager, collectionSelectMenu));
+        collectionSelectMenu.addAction("Bus", () -> selectCollection(busManager, collectionSelectMenu));
+        collectionSelectMenu.addAction("User", () -> selectCollection(userManager, collectionSelectMenu));
+
+        /* ========================== Меню заполнения коллекции ========================== */
+        fillMenu.addAction("Заполнить вручную", () -> executeCollectionAction(CollectionManager::fillManual, "Заполнение вручную", fillMenu));
+        fillMenu.addAction("Заполнить из файла", () -> executeCollectionAction(CollectionManager::fillFile, "Заполнение из файла", fillMenu));
+        fillMenu.addAction("Заполнить случайно", () -> executeCollectionAction(CollectionManager::fillRandom, "Случайное заполнение", fillMenu));
+        fillMenu.addAction("Очистить коллекцию", () -> executeCollectionAction(CollectionManager::clear, "Очистка коллекции", fillMenu));
+
+        /* ========================== Меню действий над коллекцией ========================== */
+        actionsMenu.addAction("Установить длину", () -> executeCollectionAction(CollectionManager::setLength, "Установка длины", actionsMenu));
+        actionsMenu.addAction("Отсортировать", () -> executeCollectionAction(CollectionManager::sort, "Сортировка", actionsMenu));
+        actionsMenu.addAction("Найти", () -> executeCollectionAction(CollectionManager::find, "Поиск", actionsMenu));
+        actionsMenu.addAction("Просмотреть", () -> executeCollectionAction(CollectionManager::show, "Просмотр", actionsMenu));
+
+        /* ========================== Главное меню ========================== */
+        mainMenu.addAction(collectionSelectMenu.getTitle(), collectionSelectMenu::open);
+        mainMenu.addAction(fillMenu.getTitle(), fillMenu::open);
+        mainMenu.addAction(actionsMenu.getTitle(), actionsMenu::open);
+
+        mainMenu.open();
+    }
+
+    private static void selectCollection(CollectionManager<?> manager, Menu menu) {
+        CurrentCollectionManager.setCurrent(manager, manager.getName());
+        menu.close();
+    }
+
+    private static void executeCollectionAction(Consumer<CollectionManager<?>> action,
+                                                String actionName, Menu menu) {
+        if (!CurrentCollectionManager.isSelected()) {
+            ConsoleUtils.printError("Сначала выберите коллекцию!");
+            return;
         }
+
+        CollectionManager<?> manager = CurrentCollectionManager.getCurrent();
+        menu.displayHeader(actionName);
+        action.accept(manager);
     }
 }
