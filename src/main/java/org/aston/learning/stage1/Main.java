@@ -1,54 +1,66 @@
 package org.aston.learning.stage1;
 
 import org.aston.learning.stage1.menu.CollectionManager;
+import org.aston.learning.stage1.menu.CollectionManagerFactory;
 import org.aston.learning.stage1.menu.CurrentCollectionManager;
 import org.aston.learning.stage1.menu.Menu;
-import org.aston.learning.stage1.model.Bus;
-import org.aston.learning.stage1.model.Student;
-import org.aston.learning.stage1.model.User;
-import org.aston.learning.stage1.util.ConsoleUtils;
+import org.aston.learning.stage1.model.*;
+import org.aston.learning.stage1.util.console.ConsoleUtils;
 
 import java.util.function.Consumer;
 
 public class Main {
-    public static void main(String[] args) {
-        CollectionManager<Student> studentManager = new CollectionManager<>("Student");
-        CollectionManager<Bus> busManager = new CollectionManager<>("Bus");
-        CollectionManager<User> userManager = new CollectionManager<>("User");
+    private static Menu mainMenu;
+    private static Menu collectionSelectMenu;
+    private static Menu fillMenu;
+    private static Menu actionsMenu;
 
-        Menu mainMenu = new Menu("Главное меню");
-        Menu collectionSelectMenu = new Menu("Выбор коллекции", mainMenu.getTitle());
-        Menu fillMenu = new Menu("Заполнение коллекции", mainMenu.getTitle());
-        Menu actionsMenu = new Menu("Действия над коллекцией", mainMenu.getTitle());
+    public static void main(String[] args) {
+        /* ========================== Создание коллекций ========================== */
+        CollectionManager<Student> studentManager = CollectionManagerFactory.createStudentManager("Студенты", 30);
+        CollectionManager<Bus> busManager = CollectionManagerFactory.createBusManager("Автобусы", 5);
+        CollectionManager<User> userManager = CollectionManagerFactory.createUserManager("Пользователи");
+
+        /* ========================== Установка коллекции по умолчанию ========================== */
+        CurrentCollectionManager.setCurrent(studentManager, studentManager.getName());
+
+        mainMenu = new Menu("Главное меню");
+        collectionSelectMenu = new Menu("Выбор коллекции", mainMenu.getTitle());
+        fillMenu = new Menu("Заполнение коллекции", mainMenu.getTitle());
+        actionsMenu = new Menu("Действия над коллекцией", mainMenu.getTitle());
 
         /* ========================== Меню выбора коллекции ========================== */
-        collectionSelectMenu.addAction("Student", () -> selectCollection(studentManager, collectionSelectMenu));
-        collectionSelectMenu.addAction("Bus", () -> selectCollection(busManager, collectionSelectMenu));
-        collectionSelectMenu.addAction("User", () -> selectCollection(userManager, collectionSelectMenu));
+        collectionSelectMenu
+                .addAction(studentManager.getName(), () -> selectCollection(studentManager))
+                .addAction(busManager.getName(), () -> selectCollection(busManager))
+                .addAction(userManager.getName(), () -> selectCollection(userManager));
 
         /* ========================== Меню заполнения коллекции ========================== */
-        fillMenu.addAction("Заполнить вручную", () -> executeCollectionAction(CollectionManager::fillManual, "Заполнение вручную", fillMenu));
-        fillMenu.addAction("Заполнить из файла", () -> executeCollectionAction(CollectionManager::fillFile, "Заполнение из файла", fillMenu));
-        fillMenu.addAction("Заполнить случайно", () -> executeCollectionAction(CollectionManager::fillRandom, "Случайное заполнение", fillMenu));
-        fillMenu.addAction("Очистить коллекцию", () -> executeCollectionAction(CollectionManager::clear, "Очистка коллекции", fillMenu));
+        fillMenu
+                .addAction("Заполнить вручную", () -> executeCollectionAction(CollectionManager::fillManual, "Заполнение вручную", fillMenu))
+                .addAction("Заполнить из файла", () -> executeCollectionAction(CollectionManager::fillFile, "Заполнение из файла", fillMenu))
+                .addAction("Заполнить случайно", () -> executeCollectionAction(CollectionManager::fillRandom, "Случайное заполнение", fillMenu))
+                .addAction("Очистить коллекцию", () -> executeCollectionAction(CollectionManager::clear, "Очистка коллекции", fillMenu));
 
         /* ========================== Меню действий над коллекцией ========================== */
-        actionsMenu.addAction("Установить длину", () -> executeCollectionAction(CollectionManager::setLength, "Установка длины", actionsMenu));
-        actionsMenu.addAction("Отсортировать", () -> executeCollectionAction(CollectionManager::sort, "Сортировка", actionsMenu));
-        actionsMenu.addAction("Найти", () -> executeCollectionAction(CollectionManager::find, "Поиск", actionsMenu));
-        actionsMenu.addAction("Просмотреть", () -> executeCollectionAction(CollectionManager::show, "Просмотр", actionsMenu));
+        actionsMenu
+                .addAction("Установить длину", () -> executeCollectionAction(CollectionManager::setLength, "Установка длины", actionsMenu))
+                .addAction("Отсортировать", () -> executeCollectionAction(CollectionManager::sort, "Сортировка", actionsMenu))
+                .addAction("Найти", () -> executeCollectionAction(CollectionManager::find, "Поиск", actionsMenu))
+                .addAction("Просмотреть", () -> executeCollectionAction(CollectionManager::show, "Просмотр", actionsMenu));
 
         /* ========================== Главное меню ========================== */
-        mainMenu.addAction(collectionSelectMenu.getTitle(), collectionSelectMenu::open);
-        mainMenu.addAction(fillMenu.getTitle(), fillMenu::open);
-        mainMenu.addAction(actionsMenu.getTitle(), actionsMenu::open);
-
-        mainMenu.open();
+        mainMenu
+                .addAction(collectionSelectMenu.getTitle(), collectionSelectMenu::open)
+                .addAction(fillMenu.getTitle(), fillMenu::open)
+                .addAction(actionsMenu.getTitle(), actionsMenu::open)
+                .open();
     }
 
-    private static void selectCollection(CollectionManager<?> manager, Menu menu) {
+    private static void selectCollection(CollectionManager<?> manager) {
         CurrentCollectionManager.setCurrent(manager, manager.getName());
-        menu.close();
+        System.out.println("Выбрана коллекция: " + manager.getName() + "\n");
+        collectionSelectMenu.close();
     }
 
     private static void executeCollectionAction(Consumer<CollectionManager<?>> action,

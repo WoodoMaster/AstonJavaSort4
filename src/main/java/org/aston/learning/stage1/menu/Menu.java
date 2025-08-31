@@ -2,16 +2,15 @@ package org.aston.learning.stage1.menu;
 
 import java.util.*;
 
-import org.aston.learning.stage1.util.ConsoleColor;
-import org.aston.learning.stage1.util.ConsoleUtils;
-import org.aston.learning.stage1.util.InputUtils;
+import org.aston.learning.stage1.util.console.ConsoleColor;
+import org.aston.learning.stage1.util.console.ConsoleUtils;
+import org.aston.learning.stage1.util.console.InputUtils;
 
 public class Menu {
     private final String title;
     private final Map<String, MenuAction> items;
     private final String path;
     private boolean isRunning;
-
     private static final String EXIT_TEXT = "ВЫХОД";
     private static final String BACK_TEXT = "НАЗАД";
 
@@ -52,8 +51,9 @@ public class Menu {
 
     /* ================== BINDINGS ================== */
 
-    public void addAction(String title, MenuAction action) {
+    public Menu addAction(String title, MenuAction action) {
         items.put(title, action);
+        return  this;
     }
 
     private void addBackAction() {
@@ -90,6 +90,7 @@ public class Menu {
     }
 
     private void executeChoice(int choiceIndex) {
+        System.out.println(); // Отступ для вывода, после выбора действия
         if (choiceIndex == 0) {
             if (isSubMenu()) {
                 items.get(BACK_TEXT).execute();

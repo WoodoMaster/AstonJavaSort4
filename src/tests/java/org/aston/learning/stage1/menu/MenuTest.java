@@ -42,6 +42,20 @@ class MenuTest {
     }
 
     @Test
+    void testAddMenuActionsWithTheSameTitles() {
+        Menu menu = new Menu("Тест");
+        MenuAction mockAction1 = mock(MenuAction.class);
+        MenuAction mockAction2 = mock(MenuAction.class);
+
+        menu.addAction("Тестовое действие", mockAction1);
+        menu.addAction("Тестовое действие", mockAction2);
+
+        assertTrue(menu.getItems().containsKey("Тестовое действие"));
+        assertNotSame(mockAction1, menu.getItems().get("Тестовое действие"));
+        assertSame(mockAction2, menu.getItems().get("Тестовое действие"));
+    }
+
+    @Test
     void testDisplayActions() {
         try {
             Menu menu = new Menu("Тест");
