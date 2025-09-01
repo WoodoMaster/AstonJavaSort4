@@ -58,15 +58,15 @@ public class InputUtils extends ConsoleUtils {
     }
 
     // Ввод булевого значения (да/нет)
-    public static boolean readBoolean(String prompt) {
+    public static boolean readBooleanInverted(String prompt) {
         while (true) {
             System.out.print(ConsoleColor.YELLOW + prompt + " (y/n): " + ConsoleColor.RESET);
             String input = getScanner().nextLine().trim().toLowerCase();
 
             if (input.equalsIgnoreCase("y") || input.equalsIgnoreCase("Yes")) {
-                return true;
-            } else if (input.equalsIgnoreCase("n") || input.equalsIgnoreCase("No")) {
                 return false;
+            } else if (input.equalsIgnoreCase("n") || input.equalsIgnoreCase("No")) {
+                return true;
             } else {
                 printError("Пожалуйста, введите 'y' или 'n'");
             }

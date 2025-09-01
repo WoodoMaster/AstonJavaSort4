@@ -20,17 +20,7 @@ public class ExecutionTimer {
     }
 
     // Класс для хранения результата и времени
-    public static class TimedResult<T> {
-        private final T result;
-        private final long timeMs;
-
-        public TimedResult(T result, long timeMs) {
-            this.result = result;
-            this.timeMs = timeMs;
-        }
-
-        public T getResult() { return result; }
-        public long getTimeMs() { return timeMs; }
+    public record TimedResult<T>(T result, long timeMs) {
     }
 
     // Метод для форматирования времени

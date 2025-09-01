@@ -8,8 +8,8 @@ import org.aston.learning.stage1.util.console.InputUtils;
 
 public class Menu {
     private final String title;
-    private final Map<String, MenuAction> items;
     private final String path;
+    private final Map<String, MenuAction> items;
     private boolean isRunning;
     private static final String EXIT_TEXT = "ВЫХОД";
     private static final String BACK_TEXT = "НАЗАД";
@@ -53,7 +53,7 @@ public class Menu {
 
     public Menu addAction(String title, MenuAction action) {
         items.put(title, action);
-        return  this;
+        return this;
     }
 
     private void addBackAction() {
@@ -117,7 +117,7 @@ public class Menu {
         String pathText = !suffixPath.isEmpty() ? ("    " + path + " > " + suffixPath) : "    " + path;
         int maxHeaderLength = Math.max(currentCollectionText.length(), pathText.length());
 
-        System.out.println(ConsoleColor.CYAN + "═".repeat(maxHeaderLength + 4));
+        System.out.println(ConsoleColor.BLUE + "═".repeat(maxHeaderLength + 4));
         System.out.println(currentCollectionText + "\n" + pathText);
         System.out.println("═".repeat(maxHeaderLength + 4) + ConsoleColor.RESET);
     }

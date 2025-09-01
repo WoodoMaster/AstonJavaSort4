@@ -23,7 +23,7 @@ public class ConsoleUtils {
 
     // Вывод подсказки
     public static void printInfo(String message) {
-        System.out.println(ConsoleColor.CYAN + "[i] " + message + ConsoleColor.RESET);
+        System.out.println(ConsoleColor.BLUE + "[i] " + message + ConsoleColor.RESET);
     }
 
     // Вывод ошибки

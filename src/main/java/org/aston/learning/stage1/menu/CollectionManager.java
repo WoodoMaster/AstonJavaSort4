@@ -67,10 +67,11 @@ public class CollectionManager<T> {
     }
 
     public void fillManual() {
-        System.out.println("\n=== Ручное заполнение ===");
+        System.out.println("=== Ручное заполнение ===");
 
         if (size >= capacity) {
-            System.out.println("Коллекция заполнена!");
+            ConsoleUtils.printWarning("Коллекция переполнена!\n");
+            ConsoleUtils.pause();
             return;
         }
 
@@ -84,7 +85,7 @@ public class CollectionManager<T> {
             T element = elementHandler.createElementManually();
             collection.add(element);
             size++;
-            System.out.println("Добавлен! (" + size + "/" + capacity + ")");
+            ConsoleUtils.printInfo("Элемент добавлен (" + (i + 1) + "/" + elementsToAdd + ")");
         }
 
         System.out.println("\nКоллекция '" + name + "' заполнена вручную\n" +
@@ -108,8 +109,8 @@ public class CollectionManager<T> {
             }
         });
 
-        CustomCollection<T> loadedData = timedResult.getResult();
-        long loadTime = timedResult.getTimeMs();
+        CustomCollection<T> loadedData = timedResult.result();
+        long loadTime = timedResult.timeMs();
 
         if (loadedData.isEmpty()) {
             ConsoleUtils.printError("Статус: Операция прервана\n");
@@ -132,17 +133,6 @@ public class CollectionManager<T> {
                 size++;
             }
         });
-
-        // *** Пример прогресс бара
-//        System.out.println("\nЗагрузка данных:");
-//        for (int i = 0; i <= 100; i++) {
-//            FormatUtils.showProgressBar(i, 100, 50);
-//            try {
-//                Thread.sleep(15);
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//            }
-//        }
 
         System.out.println("Коллекция '" + name + "' заполнена из файла " + filename + "\n" +
                 "Загружено элементов: " + canAdd + "\n" +
@@ -167,14 +157,26 @@ public class CollectionManager<T> {
 
     public void clear() {
         if (collection.isEmpty()) {
-            ConsoleUtils.printWarning("Коллекция уже пуста!");
+            ConsoleUtils.printWarning("Коллекция уже пуста!\n");
             ConsoleUtils.pause();
             return;
         }
 
-        if (!InputUtils.readBoolean("Вы уверены что хотите очистить коллекцию '" + name + "'?")) {
-            System.out.println("Операция отменена.");
+        if (InputUtils.readBooleanInverted("Вы уверены что хотите очистить коллекцию '" + name + "'?")) {
+            System.out.println();
+            ConsoleUtils.printInfo("Операция отменена\n");
             return;
+        }
+
+        // *** Пример прогресс бара
+        System.out.println("\nОчистка коллекции:");
+        for (int i = 0; i <= 100; i++) {
+            FormatUtils.showProgressBar(i, 100, 50);
+            try {
+                Thread.sleep(15);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         // Сохраняем количество элементов для вывода в отчет
@@ -194,13 +196,13 @@ public class CollectionManager<T> {
     }
 
     public void setLength() {
-        System.out.println("\nТекущий размер коллекции: " + size);
-        System.out.println("Текущая вместимость: " + capacity);
+        System.out.println("Текущий размер коллекции: " + size);
+        System.out.println("Текущая вместимость: " + capacity + "\n");
 
         int newCapacity = InputUtils.readInt("Введите новую вместимость: ", 1, 1000);
 
         if (newCapacity < size) {
-            if (!InputUtils.readBoolean("Внимание! Новая вместимость меньше текущего размера. Продолжить?")) {
+            if (InputUtils.readBooleanInverted("Внимание! Новая вместимость меньше текущего размера. Продолжить?")) {
                 System.out.println("Операция отменена.");
                 return;
             }
@@ -218,6 +220,12 @@ public class CollectionManager<T> {
     }
 
     public void sort() {
+        if (collection.isEmpty()) {
+            ConsoleUtils.printInfo("Коллекция пуста\n");
+            ConsoleUtils.pause();
+            return;
+        }
+
         System.out.println("Сортировка: " + sortStrategy.getSortDescription());
 
         long timeTaken = ExecutionTimer.measureExecutionTime(() -> {
@@ -235,6 +243,12 @@ public class CollectionManager<T> {
     }
 
     public void find() {
+        if (collection.isEmpty()) {
+            ConsoleUtils.printInfo("Коллекция пуста\n");
+            ConsoleUtils.pause();
+            return;
+        }
+
         String query = InputUtils.readString("Введите поисковый запрос: ", true);
 
         ExecutionTimer.TimedResult<CustomCollection<T>> timedResult = ExecutionTimer.measureExecutionTime(() ->
@@ -243,11 +257,15 @@ public class CollectionManager<T> {
                 searchStrategy.search(collection, query)
         );
 
-        CustomCollection<T> results = timedResult.getResult();
-        long timeTaken = timedResult.getTimeMs();
+        CustomCollection<T> results = timedResult.result();
+        long timeTaken = timedResult.timeMs();
 
         if (!results.isEmpty()) {
+            System.out.println("-".repeat(50));
             showCollectionTable(results, 10);
+            System.out.println("-".repeat(50));
+        } else {
+            System.out.println();
         }
 
         System.out.println("Поиск в коллекции '" + name + "' выполнен\n" +
@@ -260,16 +278,18 @@ public class CollectionManager<T> {
     }
 
     public void show() {
-        System.out.println("\n=== Коллекция: " + name + " ===");
+        System.out.println("=== Коллекция: " + name + " ===");
         System.out.println("Размер: " + size + "/" + capacity);
         System.out.println("Тип: " + elementHandler.getTypeName());
-        System.out.println("-".repeat(50));
 
         if (collection.isEmpty()) {
-            System.out.println("Коллекция пуста");
+            System.out.println();
+            ConsoleUtils.printInfo("Коллекция пуста\n");
+            ConsoleUtils.pause();
             return;
         }
 
+        System.out.println("-".repeat(50));
         showCollectionTable(collection);
         System.out.println("-".repeat(50));
         System.out.println("Всего элементов: " + size + "\n");
@@ -289,7 +309,8 @@ public class CollectionManager<T> {
     }
 
     private void showCollectionTable(CustomCollection<T> collectionToShow, int maxItemsToShow) {
-        int rowsToShow = maxItemsToShow > 0 ? Math.min(size, maxItemsToShow) : collectionToShow.size();
+        int collectionToShowSize = collectionToShow.size();
+        int rowsToShow = maxItemsToShow > 0 ? Math.min(collectionToShowSize, maxItemsToShow) : collectionToShowSize;
 
         String[] headers = elementHandler.getTableHeaders();
         String[][] data = new String[rowsToShow][headers.length];
@@ -300,8 +321,8 @@ public class CollectionManager<T> {
 
         FormatUtils.printTable(headers, data);
 
-        if (size > rowsToShow) {
-            System.out.println("... и еще " + (size - rowsToShow) + " элементов\n");
+        if (collectionToShowSize > rowsToShow) {
+            System.out.println("... и еще " + (collectionToShowSize - rowsToShow) + " элемент(ов)");
         }
     }
 }

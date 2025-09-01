@@ -93,9 +93,7 @@ public class ArrayCollection<T> implements CustomCollection<T> {
         T[] newElements = (T[]) new Object[newCapacity];
 
         // Копируем элементы
-        for (int i = 0; i < size; i++) {
-            newElements[i] = elements[i];
-        }
+        if (size >= 0) System.arraycopy(elements, 0, newElements, 0, size);
 
         this.elements = newElements;
     }
@@ -105,9 +103,7 @@ public class ArrayCollection<T> implements CustomCollection<T> {
     @SuppressWarnings("unchecked")
     public T[] toArray() {
         T[] result = (T[]) new Object[size];
-        for (int i = 0; i < size; i++) {
-            result[i] = elements[i];
-        }
+        System.arraycopy(elements, 0, result, 0, size);
         return result;
     }
 
