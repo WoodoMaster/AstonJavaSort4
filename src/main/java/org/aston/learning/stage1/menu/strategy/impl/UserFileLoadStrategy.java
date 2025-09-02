@@ -12,6 +12,8 @@ import java.io.IOException;
 public class UserFileLoadStrategy implements FileLoadStrategy<User> {
     @Override
     public CustomCollection<User> loadFromFile(String filename) throws IOException {
+        // TODO: Загрузка из файла
+        // *** Пример - загрузка из файла
         CustomCollection<User> users = new ArrayCollection<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {

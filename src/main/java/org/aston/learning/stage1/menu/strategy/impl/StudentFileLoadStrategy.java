@@ -12,6 +12,8 @@ import java.io.IOException;
 public class StudentFileLoadStrategy implements FileLoadStrategy<Student> {
     @Override
     public CustomCollection<Student> loadFromFile(String filename) throws IOException {
+        // TODO: Поиск по коллекции
+        // *** Пример - поиск по коллекции
         CustomCollection<Student> students = new ArrayCollection<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {

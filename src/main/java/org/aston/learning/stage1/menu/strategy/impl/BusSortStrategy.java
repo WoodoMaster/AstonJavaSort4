@@ -7,6 +7,8 @@ import org.aston.learning.stage1.menu.strategy.SortStrategy;
 public class BusSortStrategy implements SortStrategy<Bus> {
     @Override
     public void sort(CustomCollection<Bus> collection) {
+        // TODO: Сортировка коллекции
+        // *** Пример - сортировка коллекции
         // Пузырьковая сортировка по модели и пробегу
         for (int i = 0; i < collection.size() - 1; i++) {
             for (int j = 0; j < collection.size() - i - 1; j++) {

@@ -7,6 +7,8 @@ import org.aston.learning.stage1.menu.strategy.SortStrategy;
 public class StudentSortStrategy implements SortStrategy<Student> {
     @Override
     public void sort(CustomCollection<Student> collection) {
+        // TODO: Сортировка коллекции
+        // *** Пример - сортировка коллекции
         // Простая пузырьковая сортировка по группе и среднему баллу
         for (int i = 0; i < collection.size() - 1; i++) {
             for (int j = 0; j < collection.size() - i - 1; j++) {

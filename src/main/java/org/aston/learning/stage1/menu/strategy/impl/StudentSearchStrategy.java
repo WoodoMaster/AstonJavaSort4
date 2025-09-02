@@ -8,6 +8,8 @@ import org.aston.learning.stage1.menu.strategy.SearchStrategy;
 public class StudentSearchStrategy implements SearchStrategy<Student> {
     @Override
     public CustomCollection<Student> search(CustomCollection<Student> collection, String query) {
+        // TODO: Загрузка из файла
+        // *** Пример - загрузка из файла
         CustomCollection<Student> results = new ArrayCollection<>();
 
         for (int i = 0; i < collection.size(); i++) {

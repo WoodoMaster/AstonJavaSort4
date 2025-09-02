@@ -8,6 +8,8 @@ import org.aston.learning.stage1.menu.strategy.SearchStrategy;
 public class UserSearchStrategy implements SearchStrategy<User> {
     @Override
     public CustomCollection<User> search(CustomCollection<User> collection, String query) {
+        // TODO: Поиск по коллекции
+        // *** Пример - поиск по коллекции
         CustomCollection<User> results = new ArrayCollection<>();
 
         for (int i = 0; i < collection.size(); i++) {

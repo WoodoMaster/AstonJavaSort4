@@ -12,6 +12,8 @@ import java.io.IOException;
 public class BusFileLoadStrategy implements FileLoadStrategy<Bus> {
     @Override
     public CustomCollection<Bus> loadFromFile(String filename) throws IOException {
+        // TODO: Загрузка из файла
+        // *** Пример - загрузка из файла
         CustomCollection<Bus> buses = new ArrayCollection<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
