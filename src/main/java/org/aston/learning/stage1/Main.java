@@ -37,7 +37,8 @@ public class Main {
                 .addAction("Установить длину", () -> executeOperationAction(CollectionManager::setLength, "Установка длины"))
                 .addAction("Отсортировать", () -> executeOperationAction(CollectionManager::sort, "Сортировка"))
                 .addAction("Найти", () -> executeOperationAction(CollectionManager::find, "Поиск"))
-                .addAction("Просмотреть", () -> executeOperationAction(CollectionManager::show, "Просмотр"));
+                .addAction("Просмотреть", () -> executeOperationAction(CollectionManager::show, "Просмотр"))
+                .addAction("Записать коллекцию в файл", () -> executeFillAction(CollectionManager::saveToFile, "Запись в файл"));
 
         /* ========================== Главное меню ========================== */
         new Menu(MAIN_MENU_TITLE_TEXT)

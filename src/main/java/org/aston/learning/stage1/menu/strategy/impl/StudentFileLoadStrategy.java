@@ -18,21 +18,38 @@ public class StudentFileLoadStrategy implements FileLoadStrategy<Student> {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
+            int lineNumber = 0;
             while ((line = reader.readLine()) != null) {
+                lineNumber++;
                 if (line.trim().isEmpty()) continue;
 
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
+                try {
+                    String[] parts = line.split(",");
+                    if (parts.length != 3) {
+                        throw new IllegalArgumentException("Неверное количество полей");
+                    }
                     Student student = new Student(
                             parts[0].trim(),
                             Double.parseDouble(parts[1].trim()),
-                            parts[2].trim()
-                    );
-                    students.add(student);
+                            parts[2].trim());
+                    if (validateData(student)) {
+                        students.add(student);
+                    } else {
+                        System.out.println("Пропущена строка " + lineNumber + ": невалидные данные");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Ошибка в строке " + lineNumber + ": " + e.getMessage());
                 }
             }
         }
         return students;
+    }
+
+    @Override
+    public boolean validateData(Student student) {
+        return student.getGroupNumber() != null && !student.getGroupNumber().isEmpty() &&
+                student.getAverageGrade() >= 0.0 && student.getAverageGrade() <= 5.0 &&
+                student.getRecordBookNumber() != null && !student.getRecordBookNumber().isEmpty();
     }
 
     @Override

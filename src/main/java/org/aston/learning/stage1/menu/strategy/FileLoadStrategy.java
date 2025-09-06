@@ -7,4 +7,5 @@ import java.io.IOException;
 public interface FileLoadStrategy<T> {
     CustomCollection<T> loadFromFile(String filename) throws IOException;
     String getFileFormatDescription();
+    boolean validateData(T element);
 }

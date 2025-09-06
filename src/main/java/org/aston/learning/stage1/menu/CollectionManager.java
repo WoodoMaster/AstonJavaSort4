@@ -3,6 +3,7 @@ package org.aston.learning.stage1.menu;
 import org.aston.learning.stage1.collection.ArrayCollection;
 import org.aston.learning.stage1.collection.CustomCollection;
 import org.aston.learning.stage1.menu.strategy.ElementHandler;
+import org.aston.learning.stage1.menu.strategy.FileSaveStrategy;
 import org.aston.learning.stage1.menu.strategy.SearchStrategy;
 import org.aston.learning.stage1.menu.strategy.FileLoadStrategy;
 import org.aston.learning.stage1.menu.strategy.SortStrategy;
@@ -12,6 +13,7 @@ import org.aston.learning.stage1.util.console.FormatUtils;
 import org.aston.learning.stage1.util.console.InputUtils;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class CollectionManager<T> {
     private final String name;
@@ -20,17 +22,19 @@ public class CollectionManager<T> {
     private final SearchStrategy<T> searchStrategy;
     private final SortStrategy<T> sortStrategy;
     private final FileLoadStrategy<T> fileLoadStrategy;
+    private final FileSaveStrategy<T> fileSaveStrategy;
     private int capacity;
     private int size;
 
     public CollectionManager(String name, ElementHandler<T> elementHandler,
                              SearchStrategy<T> searchStrategy, SortStrategy<T> sortStrategy,
-                             FileLoadStrategy<T> fileLoadStrategy) {
+                             FileLoadStrategy<T> fileLoadStrategy, FileSaveStrategy<T> fileSaveStrategy) {
         this.name = name;
         this.elementHandler = elementHandler;
         this.searchStrategy = searchStrategy;
         this.sortStrategy = sortStrategy;
         this.fileLoadStrategy = fileLoadStrategy;
+        this.fileSaveStrategy = fileSaveStrategy;
         this.collection = new ArrayCollection<>();
         this.capacity = 100;
         this.size = 0;
@@ -38,12 +42,13 @@ public class CollectionManager<T> {
 
     public CollectionManager(String name, ElementHandler<T> elementHandler,
                              SearchStrategy<T> searchStrategy, SortStrategy<T> sortStrategy,
-                             FileLoadStrategy<T> fileLoadStrategy, int initialCapacity) {
+                             FileLoadStrategy<T> fileLoadStrategy, FileSaveStrategy<T> fileSaveStrategy, int initialCapacity) {
         this.name = name;
         this.elementHandler = elementHandler;
         this.searchStrategy = searchStrategy;
         this.sortStrategy = sortStrategy;
         this.fileLoadStrategy = fileLoadStrategy;
+        this.fileSaveStrategy = fileSaveStrategy;
         this.collection = new ArrayCollection<>();
         this.capacity = initialCapacity;
         this.size = 0;
@@ -146,13 +151,89 @@ public class CollectionManager<T> {
 
     public void fillRandom() {
         // TODO: Получение ПЕРЕМЕШАННЫХ данных из файла и заполнение коллекции
-
+        try {
+            // Загружаем данные из файла
+            String filename = InputUtils.readString("Введите имя файла: ", true);
+            CustomCollection<T> allData = fileLoadStrategy.loadFromFile(filename);
+            if (allData.isEmpty()) {
+                ConsoleUtils.printError("Нет данных для заполнения\n");
+                return;
+            }
+            // Перемешиваем данные
+            CustomCollection<T> shuffledData = shuffleCollection(allData);
+            int canAdd = Math.min(shuffledData.size(), capacity - size);
+            if (canAdd == 0) {
+                System.out.println("Нет места для новых элементов!");
+                return;
+            }
+            long addTime = ExecutionTimer.measureExecutionTime(() -> {
+                for (int i = 0; i < canAdd; i++) {
+                    collection.add(shuffledData.get(i));
+                    size++;
+                }
+            });
+            System.out.println("Добавлено " + canAdd + " случайных элементов");
+        } catch (IOException e) {
+            ConsoleUtils.printError("Ошибка загрузки данных: " + e.getMessage());
+        }
         System.out.println("Коллекция '" + name + "' заполнена случайными данными\n" +
                 "Сгенерировано элементов: 8\n" +
                 "Диапазон значений: 1-100\n");
-
         ConsoleUtils.printSuccess("Статус: Успешно завершено\n");
         ConsoleUtils.pause();
+    }
+
+    private CustomCollection<T> shuffleCollection(CustomCollection<T> original) {
+        // Преобразуем в массив для перемешивания
+        T[] array = original.toArray();
+        // Перемешиваем
+        Random random = new Random();
+        for (int i = array.length - 1; i > 0; i--) {
+            int index = random.nextInt(i + 1);
+            T temp = array[index];
+            array[index] = array[i];
+            array[i] = temp;
+        }
+
+        // Создаем новую коллекцию
+        CustomCollection<T> shuffled = new ArrayCollection<>();
+        for (T element : array) {
+            shuffled.add(element);
+        }
+        return shuffled;
+    }
+
+    // Запись в файл
+    public void saveToFile() {
+        if (collection.isEmpty()) {
+            ConsoleUtils.printInfo("Коллекция пуста\n");
+            return;
+        }
+
+        String filename = InputUtils.readString("Введите имя файла: ", true);
+
+        try {
+            fileSaveStrategy.saveToFile(filename, collection);
+            ConsoleUtils.printSuccess("Данные сохранены в файл: " + filename);
+        } catch (IOException e) {
+            ConsoleUtils.printError("Ошибка сохранения: " + e.getMessage());
+        }
+    }
+
+    public void saveToFile(CustomCollection<T> collection) {
+        if (collection.isEmpty()) {
+            ConsoleUtils.printInfo("Коллекция пуста\n");
+            return;
+        }
+
+        String filename = InputUtils.readString("Введите имя файла: ", true);
+
+        try {
+            fileSaveStrategy.saveToFile(filename, collection);
+            ConsoleUtils.printSuccess("Данные сохранены в файл: " + filename);
+        } catch (IOException e) {
+            ConsoleUtils.printError("Ошибка сохранения: " + e.getMessage());
+        }
     }
 
     public void clear() {
@@ -239,6 +320,10 @@ public class CollectionManager<T> {
                 "Время выполнения: " + ExecutionTimer.formatTime(timeTaken) + "\n");
 
         ConsoleUtils.printSuccess("Статус: Успешно завершено\n");
+        if(!InputUtils.readBooleanInverted("Хотите записать отсортированную коллекцию " + name + " в файл?")) {
+            saveToFile(collection);
+            ConsoleUtils.printSuccess("Статус: Успешно завершено\n");
+        }
         ConsoleUtils.pause();
     }
 
@@ -273,6 +358,9 @@ public class CollectionManager<T> {
                 "Критерий поиска: " + searchStrategy.getSearchDescription() + "\n" +
                 "Время выполнения: " + ExecutionTimer.formatTime(timeTaken) + "\n");
 
+        if(!InputUtils.readBooleanInverted("Хотите записать результаты поиска в файл?")) {
+            saveToFile(results);
+        }
         ConsoleUtils.printSuccess("Статус: Успешно завершено\n");
         ConsoleUtils.pause();
     }
