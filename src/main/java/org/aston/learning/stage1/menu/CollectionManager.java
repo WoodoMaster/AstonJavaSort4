@@ -12,7 +12,9 @@ import org.aston.learning.stage1.util.console.ConsoleUtils;
 import org.aston.learning.stage1.util.console.FormatUtils;
 import org.aston.learning.stage1.util.console.InputUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 
 public class CollectionManager<T> {
@@ -101,7 +103,7 @@ public class CollectionManager<T> {
     }
 
     public void fillFile() {
-        String filename = InputUtils.readString("Введите имя файла: ", true);
+        String filename = InputUtils.readString("Введите путь до файла: ", true);
 
         ExecutionTimer.TimedResult<CustomCollection<T>> timedResult = ExecutionTimer.measureExecutionTime(() -> {
             // TODO: Получение данных из файла и заполнение коллекции
@@ -150,37 +152,101 @@ public class CollectionManager<T> {
     }
 
     public void fillRandom() {
-        // TODO: Получение ПЕРЕМЕШАННЫХ данных из файла и заполнение коллекции
         try {
+            // Предлагаем выбор: использовать файл по умолчанию или указать свой
+            System.out.println("Выберите источник данных:");
+            System.out.println("1. Использовать демонстративный файл по умолчанию");
+            System.out.println("2. Указать другой файл");
+
+            int choice = InputUtils.readInt("Ваш выбор (1-2): ", 1, 2);
+
+            String filename;
+            CustomCollection<T> allData;
+            if (choice == 1) {
+                InputStream is = ClassLoader.getSystemResourceAsStream(getDefaultDataFile());
+                allData = fileLoadStrategy.loadFromFile(is);
+            } else {
+                filename = InputUtils.readString("Введите путь к файлу: ", true);
+                allData = fileLoadStrategy.loadFromFile(filename);
+            }
+
             // Загружаем данные из файла
-            String filename = InputUtils.readString("Введите имя файла: ", true);
-            CustomCollection<T> allData = fileLoadStrategy.loadFromFile(filename);
             if (allData.isEmpty()) {
-                ConsoleUtils.printError("Нет данных для заполнения\n");
+                ConsoleUtils.printError("Нет данных для заполнения в файле");
+                ConsoleUtils.printInfo("Проверьте формат файла и повторите попытку");
+                ConsoleUtils.pause();
                 return;
             }
+
+            // Предлагаем выбрать количество элементов для добавления
+            int maxElements = Math.min(allData.size(), capacity - size);
+            System.out.println("Доступно элементов в файле: " + allData.size());
+            System.out.println("Можно добавить: " + maxElements + " элементов");
+
+            int elementsToAdd;
+            if (maxElements > 1) {
+                elementsToAdd = InputUtils.readInt(
+                        "Сколько элементов добавить? (1-" + maxElements + "): ",
+                        1, maxElements
+                );
+            } else if (maxElements == 1) {
+                elementsToAdd = 1;
+                System.out.println("Будет добавлен 1 элемент");
+            } else {
+                ConsoleUtils.printWarning("Нет места для новых элементов!");
+                ConsoleUtils.pause();
+                return;
+            }
+
             // Перемешиваем данные
             CustomCollection<T> shuffledData = shuffleCollection(allData);
-            int canAdd = Math.min(shuffledData.size(), capacity - size);
-            if (canAdd == 0) {
-                System.out.println("Нет места для новых элементов!");
-                return;
-            }
+
+            // Добавляем элементы
             long addTime = ExecutionTimer.measureExecutionTime(() -> {
-                for (int i = 0; i < canAdd; i++) {
+                for (int i = 0; i < elementsToAdd; i++) {
                     collection.add(shuffledData.get(i));
                     size++;
                 }
             });
-            System.out.println("Добавлено " + canAdd + " случайных элементов");
+
+            // Показываем прогресс-бар
+            System.out.println("\nДобавление элементов:");
+            for (int i = 0; i <= 100; i++) {
+                FormatUtils.showProgressBar(i, 100, 50);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            System.out.println("\nКоллекция '" + name + "' заполнена случайными данными");
+            System.out.println("Добавлено элементов: " + elementsToAdd);
+            System.out.println("Всего доступно в файле: " + allData.size());
+            System.out.println("Время добавления: " + ExecutionTimer.formatTime(addTime));
+            System.out.println();
+
+            ConsoleUtils.printSuccess("Статус: Успешно завершено\n");
+
         } catch (IOException e) {
             ConsoleUtils.printError("Ошибка загрузки данных: " + e.getMessage());
+            ConsoleUtils.printInfo("Проверьте формат файла и повторите попытку");
+        } catch (Exception e) {
+            ConsoleUtils.printError("Неожиданная ошибка: " + e.getMessage());
         }
-        System.out.println("Коллекция '" + name + "' заполнена случайными данными\n" +
-                "Сгенерировано элементов: 8\n" +
-                "Диапазон значений: 1-100\n");
-        ConsoleUtils.printSuccess("Статус: Успешно завершено\n");
         ConsoleUtils.pause();
+    }
+
+    // Метод для определения файла данных по типу коллекции
+    private String getDefaultDataFile() {
+        String typeName = elementHandler.getTypeName().toLowerCase();
+
+        return switch (typeName) {
+            case "student" -> "StudentData.csv";
+            case "bus" -> "BusData.csv";
+            case "user" -> "UserData.csv";
+            default -> throw new IllegalArgumentException("Неизвестный тип коллекции: " + typeName);
+        };
     }
 
     private CustomCollection<T> shuffleCollection(CustomCollection<T> original) {
@@ -203,21 +269,20 @@ public class CollectionManager<T> {
         return shuffled;
     }
 
-    // Запись в файл
+    // Запись в файл на рабочем столе
     public void saveToFile() {
         if (collection.isEmpty()) {
             ConsoleUtils.printInfo("Коллекция пуста\n");
             return;
         }
 
-        String filename = InputUtils.readString("Введите имя файла: ", true);
-
         try {
-            fileSaveStrategy.saveToFile(filename, collection);
-            ConsoleUtils.printSuccess("Данные сохранены в файл: " + filename);
+            fileSaveStrategy.saveToFile(collection);
+            ConsoleUtils.printSuccess("Данные сохранены в файл в корневой папке");
         } catch (IOException e) {
             ConsoleUtils.printError("Ошибка сохранения: " + e.getMessage());
         }
+        ConsoleUtils.pause();
     }
 
     public void saveToFile(CustomCollection<T> collection) {
@@ -229,7 +294,7 @@ public class CollectionManager<T> {
         String filename = InputUtils.readString("Введите имя файла: ", true);
 
         try {
-            fileSaveStrategy.saveToFile(filename, collection);
+            fileSaveStrategy.saveToFile(collection);
             ConsoleUtils.printSuccess("Данные сохранены в файл: " + filename);
         } catch (IOException e) {
             ConsoleUtils.printError("Ошибка сохранения: " + e.getMessage());
