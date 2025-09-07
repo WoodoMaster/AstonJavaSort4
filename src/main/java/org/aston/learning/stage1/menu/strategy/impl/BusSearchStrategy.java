@@ -22,7 +22,7 @@ public class BusSearchStrategy implements SearchStrategy<Bus> {
 
         CustomCollection<Bus> results = new ArrayCollection<>();
         // Список найденных индексов для проверки на дубликаты
-        List indexes = new ArrayList<Integer>();
+        List<Integer> indexes = new ArrayList<>();
 
         int intQuery = parseIntOrDefault(query, -1);
         System.out.println("int: " + intQuery);

@@ -17,17 +17,17 @@ public class BusSortStrategy implements SortStrategy<Bus> {
         // *** Пример - сортировка коллекции
 
         // Сортировка по номеру -> модели -> пробегу (комплексный компаратор)
-        quickSort(collection, 0, collection.size() - 1, new Comparator<Bus>() {
-                    @Override
-                    public int compare(Bus bus1, Bus bus2) {
-                        int result = bus1.getNumber().compareTo(bus2.getNumber());
-                        if (result != 0) return result;
+        quickSort(collection, 0, collection.size() - 1, new Comparator<>() {
+            @Override
+            public int compare(Bus bus1, Bus bus2) {
+                int result = bus1.getNumber().compareTo(bus2.getNumber());
+                if (result != 0) return result;
 
-                        result = bus1.getModel().compareTo(bus2.getModel());
-                        if (result != 0) return result;
+                result = bus1.getModel().compareTo(bus2.getModel());
+                if (result != 0) return result;
 
-                        return Integer.compare(bus1.getMileage(), bus2.getMileage());
-                    }
+                return Integer.compare(bus1.getMileage(), bus2.getMileage());
+            }
         });
     }
 

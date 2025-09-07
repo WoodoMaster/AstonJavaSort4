@@ -1,6 +1,5 @@
 package org.aston.learning.stage1.sort;
 
-import org.aston.learning.stage1.collection.ArrayCollection;
 import org.aston.learning.stage1.collection.CustomCollection;
 
 import java.util.Comparator;
