@@ -1,6 +1,6 @@
 package org.aston.learning.stage1.model;
 
-public class Student {
+public class Student implements Comparable<Student> {
     private String groupNumber;
     private double averageGrade;
     private String recordBookNumber;
@@ -20,4 +20,9 @@ public class Student {
     public void setAverageGrade(double averageGrade) { this.averageGrade = averageGrade; }
     public String getRecordBookNumber() { return recordBookNumber; }
     public void setRecordBookNumber(String recordBookNumber) { this.recordBookNumber = recordBookNumber; }
+
+    @Override
+    public int compareTo(Student anotherStudent) {
+        return this.getRecordBookNumber().compareToIgnoreCase(anotherStudent.getRecordBookNumber());
+    }
 }
