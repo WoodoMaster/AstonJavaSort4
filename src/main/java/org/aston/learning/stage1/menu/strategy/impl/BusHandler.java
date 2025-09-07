@@ -2,14 +2,15 @@ package org.aston.learning.stage1.menu.strategy.impl;
 
 import org.aston.learning.stage1.model.Bus;
 import org.aston.learning.stage1.menu.strategy.ElementHandler;
+import org.aston.learning.stage1.util.console.InputPattern;
 import org.aston.learning.stage1.util.console.InputUtils;
 
 public class BusHandler implements ElementHandler<Bus> {
     @Override
     public Bus createElementManually() {
         System.out.println("Создание автобуса:");
-        String number = InputUtils.readString("Номер: ", true);
-        String model = InputUtils.readString("Модель: ", true);
+        String number = InputUtils.readRegex("Номер*: ", InputPattern.BUS_NUMBER, true);
+        String model = InputUtils.readRegex("Модель*: ", InputPattern.BUS_MODEL, true);
         int mileage = InputUtils.readInt("Пробег: ", 0, 1000000);
         return new Bus(number, model, mileage);
     }
