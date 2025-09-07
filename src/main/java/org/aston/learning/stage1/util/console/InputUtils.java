@@ -72,4 +72,28 @@ public class InputUtils extends ConsoleUtils {
             }
         }
     }
+
+    public static String readRegex(String prompt, InputPattern pattern, boolean required) {
+        while (true) {
+            System.out.print(ConsoleColor.CYAN + prompt + ConsoleColor.RESET);
+            String input = getScanner().nextLine().trim();
+
+            if (required && input.isEmpty()) {
+                printError("Это поле обязательно для заполнения!");
+                continue;
+            }
+
+            // Если не обязательное и пустое - возвращаем пустую строку
+            if (!required && input.isEmpty()) {
+                return "";
+            }
+
+            // Проверка по регулярному выражению из enum
+            if (input.matches(pattern.getRegex())) {
+                return input;
+            } else {
+                printError(pattern.getErrorMessage());
+            }
+        }
+    }
 }
