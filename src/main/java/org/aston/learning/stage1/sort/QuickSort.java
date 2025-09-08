@@ -3,8 +3,25 @@ package org.aston.learning.stage1.sort;
 import org.aston.learning.stage1.collection.CustomCollection;
 
 import java.util.Comparator;
+import java.util.List;
 
 public class QuickSort {
+
+    // Сортировка с комплексным компараторам по 3-м полям
+    public static <T> void quickSortByMultipleFields(CustomCollection<T> collection,
+                                                                    Comparator<T> firstComparator,
+                                                                    Comparator<T> secondComparator,
+                                                                    Comparator<T> thirdComparator) {
+
+        // Создаем комплексный компаратор
+        Comparator<T> combinedComparator = firstComparator
+                .thenComparing(secondComparator)
+                .thenComparing(thirdComparator);
+
+        quickSort(collection, 0, collection.size() - 1, combinedComparator);
+    }
+
+
     // Быстрая сортировка (рекурсивная)
     public static <T> void quickSort(CustomCollection<T> collection, int low, int high, Comparator<T> comparator) {
         if (low < high) {
