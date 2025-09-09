@@ -22,7 +22,7 @@ public class CollectionManager<T> {
     private final FileLoadStrategy<T> fileLoadStrategy;
     private int capacity;
     private int size;
-    private int actionFieldIndex = 1;
+    public static int actionFieldIndex = 1;
 
     public CollectionManager(String name, ElementHandler<T> elementHandler,
                              SearchStrategy<T> searchStrategy, SortStrategy<T> sortStrategy,
@@ -236,13 +236,9 @@ public class CollectionManager<T> {
             return;
         }
 
-        System.out.println("Сортировка: " +
-                switch (actionFieldIndex) {
-                    case 1 -> "по номеру, модели, пробегу";
-                    case 2 -> "по модели, пробегу, номеру";
-                    case 3 -> "по пробегу, модели, номеру";
-                    default -> "";
-                });
+
+        System.out.println("Сортировка: " + sortStrategy.getSortDescription());
+
         long timeTaken = ExecutionTimer.measureExecutionTime(() -> {
             sortStrategy.sort(collection, actionFieldIndex);
         });

@@ -2,8 +2,9 @@ package org.aston.learning.stage1.menu.strategy.impl;
 
 import org.aston.learning.stage1.collection.ArrayCollection;
 import org.aston.learning.stage1.collection.CustomCollection;
-import org.aston.learning.stage1.model.Bus;
+import org.aston.learning.stage1.menu.CollectionManager;
 import org.aston.learning.stage1.menu.strategy.SearchStrategy;
+import org.aston.learning.stage1.model.Bus;
 import org.aston.learning.stage1.sort.BusMileageComparator;
 import org.aston.learning.stage1.sort.BusModelComparator;
 import org.aston.learning.stage1.sort.BusNumberComparator;
@@ -27,27 +28,29 @@ public class BusSearchStrategy implements SearchStrategy<Bus> {
         List<Integer> foundIndexes = new ArrayList<>();
 
         int intQuery = parseIntOrDefault(query, -1);
-        actionIndex = fieldIndex;
         Bus bus = new Bus(query, query, intQuery);
 
         // Поиск по полю с предварительной сортировкой
         switch (fieldIndex) {
             case 1 -> { // по номеру
-                quickSortByMultipleFields(collection,
+                quickSortByMultipleFields(
+                        collection,
                         new BusNumberComparator(),
                         new BusModelComparator(),
                         new BusMileageComparator());
                 foundIndexes = binarySearchAll(collection, bus, new BusNumberComparator());
             }
             case 2 -> { // по модели
-                quickSortByMultipleFields(collection,
+                quickSortByMultipleFields(
+                        collection,
                         new BusModelComparator(),
                         new BusMileageComparator(),
                         new BusNumberComparator());
                 foundIndexes = binarySearchAll(collection, bus, new BusModelComparator());
             }
             case 3 -> { // по пробегу
-                quickSortByMultipleFields(collection,
+                quickSortByMultipleFields(
+                        collection,
                         new BusMileageComparator(),
                         new BusModelComparator(),
                         new BusNumberComparator());
@@ -66,19 +69,15 @@ public class BusSearchStrategy implements SearchStrategy<Bus> {
 
     @Override
     public String getSearchDescription() {
-        return "Поиск по " + switch (actionIndex) {
-            case 1 -> "номеру";
-            case 2 -> "модели";
-            case 3 -> "пробегу";
+        return "Поиск " + switch (CollectionManager.actionFieldIndex) {
+            case 1 -> "по номеру";
+            case 2 -> "по модели";
+            case 3 -> "по пробегу";
             default -> "";
         };
     }
 
     private boolean containsIgnoreCase(String source, String target) {
         return source.toLowerCase().contains(target.toLowerCase());
-    }
-
-    public void setActionIndex(int actionIndex) {
-        this.actionIndex = actionIndex;
     }
 }
