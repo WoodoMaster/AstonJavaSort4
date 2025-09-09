@@ -78,11 +78,6 @@ public class CollectionManager<T> {
         return elementHandler;
     }
 
-    // Сеттеры
-    public void setActionFieldIndex(int actionFieldIndex) {
-        this.actionFieldIndex = actionFieldIndex;
-    }
-
     public void fillManual() {
         System.out.println("=== Ручное заполнение ===");
 

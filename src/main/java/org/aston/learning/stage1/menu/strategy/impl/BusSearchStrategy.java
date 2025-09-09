@@ -17,8 +17,6 @@ import static org.aston.learning.stage1.sort.QuickSort.quickSortByMultipleFields
 import static org.aston.learning.stage1.util.ConvertUtils.parseIntOrDefault;
 
 public class BusSearchStrategy implements SearchStrategy<Bus> {
-    private int actionIndex = 1;
-
     // Поиск по коллекции с предварительной сортировкой по указанному полю
     @Override
     public CustomCollection<Bus> search(CustomCollection<Bus> collection, int fieldIndex, String query) {

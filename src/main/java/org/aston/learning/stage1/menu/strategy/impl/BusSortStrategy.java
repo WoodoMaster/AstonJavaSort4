@@ -9,6 +9,8 @@ import org.aston.learning.stage1.sort.BusModelComparator;
 import org.aston.learning.stage1.sort.BusNumberComparator;
 
 import static org.aston.learning.stage1.sort.QuickSort.quickSortByMultipleFields;
+import static org.aston.learning.stage1.sort.QuickSort.specialQuickSort;
+import static org.aston.learning.stage1.util.ConvertUtils.isEven;
 
 public class BusSortStrategy implements SortStrategy<Bus> {
     @Override
@@ -38,6 +40,22 @@ public class BusSortStrategy implements SortStrategy<Bus> {
                         new BusModelComparator(),
                         new BusNumberComparator());
             }
+            case 4 -> {
+                // Особая сортировка по числовому полю
+
+                // Предварительно собираем индексы элементов с четным значением поля
+                int count = getEvenCount(collection);
+                if (count <= 1) return;
+
+                int[] evenPositionIndexes = new int[count];
+                for (int i = 0, k = 0; i < collection.size(); i++) {
+                    if (isEven(collection.get(i).getMileage())) evenPositionIndexes[k++] = i;
+                }
+
+                specialQuickSort(
+                        collection, evenPositionIndexes,
+                        new BusMileageComparator());
+            }
         }
     }
 
@@ -47,7 +65,20 @@ public class BusSortStrategy implements SortStrategy<Bus> {
             case 1 -> "по номеру, модели, пробегу";
             case 2 -> "по модели, пробегу, номеру";
             case 3 -> "по пробегу, модели, номеру";
+            case 4 -> "особая по пробегу";
             default -> "";
         };
+    }
+
+    // Возвращает количество элементов в коллекции с четным значением поля
+    private int getEvenCount(CustomCollection<Bus> collection) {
+        int n = collection.size();
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (isEven(collection.get(i).getMileage())) {
+                count++;
+            }
+        }
+        return count;
     }
 }
