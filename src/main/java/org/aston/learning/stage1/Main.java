@@ -37,24 +37,22 @@ public class Main {
         /* ========================== Меню поиска по коллекции ========================== */
         searchMenu = new Menu("Поиск по коллекции", MAIN_MENU_TITLE_TEXT)
                 .addAction("Поиск по полю 1", () -> executeFindAction(CollectionManager::find, 1, "Поиск по полю 1"))
-                .addAction("Поиск по полю 2", () -> executeFindAction(CollectionManager::find,2, "Поиск по полю 2"))
+                .addAction("Поиск по полю 2", () -> executeFindAction(CollectionManager::find, 2, "Поиск по полю 2"))
                 .addAction("Поиск по полю 3", () -> executeFindAction(CollectionManager::find, 3, "Поиск по полю 3"));
 
         /* ========================== Меню сортировки коллекции ========================== */
         sortMenu = new Menu("Сортировка коллекции", MAIN_MENU_TITLE_TEXT)
                 .addAction("Сортировка по полю 1", () -> executeFindAction(CollectionManager::sort, 1, "Сортировка по полю 1"))
-                .addAction("Сортировка по полю 2", () -> executeFindAction(CollectionManager::sort, 2,"Сортировка по полю 2"))
-                .addAction("Сортировка по полю 3", () -> executeFindAction(CollectionManager::sort, 3,"Сортировка по полю 3"));
+                .addAction("Сортировка по полю 2", () -> executeFindAction(CollectionManager::sort, 2, "Сортировка по полю 2"))
+                .addAction("Сортировка по полю 3", () -> executeFindAction(CollectionManager::sort, 3, "Сортировка по полю 3"));
 
         /* ========================== Меню действий над коллекцией ========================== */
         operationsMenu = new Menu("Действия над коллекцией", MAIN_MENU_TITLE_TEXT)
                 .addAction("Установить длину", () -> executeOperationAction(CollectionManager::setLength, "Установка длины"))
-
                 .addAction("Отсортировать", () -> executeOperationAction(CollectionManager::sort, "Сортировка"))
                 .addAction("Найти", () -> executeOperationAction(CollectionManager::find, "Поиск"))
                 .addAction("Просмотреть", () -> executeOperationAction(CollectionManager::show, "Просмотр"))
-                .addAction("Записать коллекцию в файл", () -> executeFillAction(CollectionManager::saveToFile, "Запись в файл"));
-
+                .addAction("Записать коллекцию в файл", () -> executeFillAction(CollectionManager::saveToFile, "Запись в файл"))
                 .addAction("Отсортировать", sortMenu::open)
                 .addAction("Найти", searchMenu::open)
                 .addAction("Просмотреть", () -> executeOperationAction(CollectionManager::show, "Просмотр"));
@@ -96,7 +94,7 @@ public class Main {
         action.execute(manager);
     }
 
-    private static void executeFindAction(CollectionAction action,int fieldIndex, String actionTitle) {
+    private static void executeFindAction(CollectionAction action, int fieldIndex, String actionTitle) {
         if (!CurrentCollectionManager.isSelected()) {
             ConsoleUtils.printError("Сначала выберите коллекцию!");
             return;
