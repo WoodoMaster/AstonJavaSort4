@@ -1,36 +1,53 @@
 package org.aston.learning.stage1.menu.strategy.impl;
 
 import org.aston.learning.stage1.collection.CustomCollection;
-import org.aston.learning.stage1.model.Bus;
+import org.aston.learning.stage1.menu.CollectionManager;
 import org.aston.learning.stage1.menu.strategy.SortStrategy;
+import org.aston.learning.stage1.model.Bus;
+import org.aston.learning.stage1.sort.BusMileageComparator;
+import org.aston.learning.stage1.sort.BusModelComparator;
+import org.aston.learning.stage1.sort.BusNumberComparator;
+
+import static org.aston.learning.stage1.sort.QuickSort.quickSortByMultipleFields;
 
 public class BusSortStrategy implements SortStrategy<Bus> {
     @Override
-    public void sort(CustomCollection<Bus> collection) {
-        // TODO: Сортировка коллекции
-        // *** Пример - сортировка коллекции
-        // Пузырьковая сортировка по модели и пробегу
-        for (int i = 0; i < collection.size() - 1; i++) {
-            for (int j = 0; j < collection.size() - i - 1; j++) {
-                Bus current = collection.get(j);
-                Bus next = collection.get(j + 1);
-
-                int modelCompare = current.getModel().compareTo(next.getModel());
-                if (modelCompare > 0 || (modelCompare == 0 && current.getMileage() > next.getMileage())) {
-                    swap(collection, j, j + 1);
-                }
+    public void sort(CustomCollection<Bus> collection, int fieldIndex) {
+        switch (fieldIndex) {
+            case 1 -> {
+                // Сортировка по номеру -> модели -> пробегу (комплексный компаратор)
+                quickSortByMultipleFields(
+                        collection,
+                        new BusNumberComparator(),
+                        new BusModelComparator(),
+                        new BusMileageComparator());
+            }
+            case 2 -> {
+                // Сортировка по модели -> пробегу -> номеру (комплексный компаратор)
+                quickSortByMultipleFields(
+                        collection,
+                        new BusModelComparator(),
+                        new BusMileageComparator(),
+                        new BusNumberComparator());
+            }
+            case 3 -> {
+                // Сортировка по пробегу -> модели -> номеру (комплексный компаратор)
+                quickSortByMultipleFields(
+                        collection,
+                        new BusMileageComparator(),
+                        new BusModelComparator(),
+                        new BusNumberComparator());
             }
         }
     }
 
     @Override
     public String getSortDescription() {
-        return "Сортировка по модели и пробегу";
-    }
-
-    private void swap(CustomCollection<Bus> collection, int i, int j) {
-        Bus temp = collection.get(i);
-        collection.remove(i);
-        collection.add(temp);
+        return "Сортировка " + switch (CollectionManager.actionFieldIndex) {
+            case 1 -> "по номеру, модели, пробегу";
+            case 2 -> "по модели, пробегу, номеру";
+            case 3 -> "по пробегу, модели, номеру";
+            default -> "";
+        };
     }
 }
