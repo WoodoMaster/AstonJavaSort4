@@ -38,4 +38,8 @@ public class ConvertUtils {
         Double v = parseDoubleOrNull(s);
         return v != null ? v : def;
     }
+
+    public static boolean isEven(int x) {
+        return (x % 2) == 0;
+    }
 }

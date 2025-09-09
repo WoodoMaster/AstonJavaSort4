@@ -44,7 +44,8 @@ public class Main {
         sortMenu = new Menu("Сортировка коллекции", MAIN_MENU_TITLE_TEXT)
                 .addAction("Сортировка по полю 1", () -> executeFindAction(CollectionManager::sort, 1, "Сортировка по полю 1"))
                 .addAction("Сортировка по полю 2", () -> executeFindAction(CollectionManager::sort, 2,"Сортировка по полю 2"))
-                .addAction("Сортировка по полю 3", () -> executeFindAction(CollectionManager::sort, 3,"Сортировка по полю 3"));
+                .addAction("Сортировка по полю 3", () -> executeFindAction(CollectionManager::sort, 3,"Сортировка по полю 3"))
+                .addAction("Особая сортировка", () -> executeFindAction(CollectionManager::sort, 4,"Особая сортировка"));
 
         /* ========================== Меню действий над коллекцией ========================== */
         operationsMenu = new Menu("Действия над коллекцией", MAIN_MENU_TITLE_TEXT)
@@ -97,7 +98,7 @@ public class Main {
 
         fillMenu.displayHeader(actionTitle);
         CollectionManager<?> manager = CurrentCollectionManager.getCurrent();
-        manager.setActionFieldIndex(fieldIndex);
+        CollectionManager.actionFieldIndex = fieldIndex;
         action.execute(manager);
     }
 }
