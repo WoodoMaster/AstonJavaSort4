@@ -12,7 +12,8 @@ public class CollectionManagerFactory {
                 new StudentHandler(),
                 new StudentSearchStrategy(),
                 new StudentSortStrategy(),
-                new StudentFileLoadStrategy()
+                new StudentFileLoadStrategy(),
+                new StudentFileSaveStrategy()
         );
     }
 
@@ -23,6 +24,7 @@ public class CollectionManagerFactory {
                 new StudentSearchStrategy(),
                 new StudentSortStrategy(),
                 new StudentFileLoadStrategy(),
+                new StudentFileSaveStrategy(),
                 size
         );
     }
@@ -33,7 +35,8 @@ public class CollectionManagerFactory {
                 new BusHandler(),
                 new BusSearchStrategy(),
                 new BusSortStrategy(),
-                new BusFileLoadStrategy()
+                new BusFileLoadStrategy(),
+                new BusFileSaveStrategy()
         );
     }
 
@@ -44,6 +47,7 @@ public class CollectionManagerFactory {
                 new BusSearchStrategy(),
                 new BusSortStrategy(),
                 new BusFileLoadStrategy(),
+                new BusFileSaveStrategy(),
                 size
         );
     }
@@ -54,7 +58,8 @@ public class CollectionManagerFactory {
                 new UserHandler(),
                 new UserSearchStrategy(),
                 new UserSortStrategy(),
-                new UserFileLoadStrategy()
+                new UserFileLoadStrategy(),
+                new UserFileSaveStrategy()
         );
     }
 
@@ -65,6 +70,7 @@ public class CollectionManagerFactory {
                 new UserSearchStrategy(),
                 new UserSortStrategy(),
                 new UserFileLoadStrategy(),
+                new UserFileSaveStrategy(),
                 size
         );
     }

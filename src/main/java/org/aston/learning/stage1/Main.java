@@ -49,9 +49,16 @@ public class Main {
         /* ========================== Меню действий над коллекцией ========================== */
         operationsMenu = new Menu("Действия над коллекцией", MAIN_MENU_TITLE_TEXT)
                 .addAction("Установить длину", () -> executeOperationAction(CollectionManager::setLength, "Установка длины"))
+
+                .addAction("Отсортировать", () -> executeOperationAction(CollectionManager::sort, "Сортировка"))
+                .addAction("Найти", () -> executeOperationAction(CollectionManager::find, "Поиск"))
+                .addAction("Просмотреть", () -> executeOperationAction(CollectionManager::show, "Просмотр"))
+                .addAction("Записать коллекцию в файл", () -> executeFillAction(CollectionManager::saveToFile, "Запись в файл"));
+
                 .addAction("Отсортировать", sortMenu::open)
                 .addAction("Найти", searchMenu::open)
                 .addAction("Просмотреть", () -> executeOperationAction(CollectionManager::show, "Просмотр"));
+
 
         /* ========================== Главное меню ========================== */
         new Menu(MAIN_MENU_TITLE_TEXT)

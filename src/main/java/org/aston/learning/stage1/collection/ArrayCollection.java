@@ -1,5 +1,7 @@
 package org.aston.learning.stage1.collection;
 
+import java.util.Comparator;
+
 public class ArrayCollection<T> implements CustomCollection<T> {
     private static final int DEFAULT_CAPACITY = 10;
     private static final double GROWTH_FACTOR = 1.5;
@@ -149,5 +151,38 @@ public class ArrayCollection<T> implements CustomCollection<T> {
         T temp = collection.get(i);
         collection.set(i, collection.get(j));
         collection.set(j, temp);
+    }
+
+    private void swap(int i, int j) {
+        T temp = elements[i];
+        elements[i] = elements[j];
+        elements[j] = temp;
+    }
+
+    public void quickSort(Comparator<T> comparator) {
+        quickSort(0, size - 1, comparator);
+    }
+
+    private void quickSort(int low, int high, Comparator<T> comparator) {
+        if (low < high) {
+            int pi = partition(low, high, comparator);
+            quickSort(low, pi - 1, comparator);
+            quickSort(pi + 1, high, comparator);
+        }
+    }
+
+    private int partition(int low, int high, Comparator<T> comparator) {
+        T pivot = elements[high];
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (comparator.compare(elements[j], pivot) <= 0) {
+                i++;
+                swap(i, j);
+            }
+        }
+
+        swap(i + 1, high);
+        return i + 1;
     }
 }
