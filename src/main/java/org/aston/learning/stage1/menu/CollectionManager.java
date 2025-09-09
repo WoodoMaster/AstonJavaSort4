@@ -27,6 +27,7 @@ public class CollectionManager<T> {
     private final FileSaveStrategy<T> fileSaveStrategy;
     private int capacity;
     private int size;
+    public static int actionFieldIndex = 1;
 
     public CollectionManager(String name, ElementHandler<T> elementHandler,
                              SearchStrategy<T> searchStrategy, SortStrategy<T> sortStrategy,
@@ -69,8 +70,17 @@ public class CollectionManager<T> {
         return size;
     }
 
+    public int getActionFieldIndex() {
+        return actionFieldIndex;
+    }
+
     public ElementHandler<T> getElementHandler() {
         return elementHandler;
+    }
+
+    // Сеттеры
+    public void setActionFieldIndex(int actionFieldIndex) {
+        this.actionFieldIndex = actionFieldIndex;
     }
 
     public void fillManual() {
@@ -372,12 +382,11 @@ public class CollectionManager<T> {
             return;
         }
 
+
         System.out.println("Сортировка: " + sortStrategy.getSortDescription());
 
         long timeTaken = ExecutionTimer.measureExecutionTime(() -> {
-            // TODO: Сортировка коллекции
-            // *** Пример - сортировка коллекции
-            sortStrategy.sort(collection);
+            sortStrategy.sort(collection, actionFieldIndex);
         });
 
         System.out.println("Коллекция '" + name + "' отсортирована\n" +
@@ -402,9 +411,7 @@ public class CollectionManager<T> {
         String query = InputUtils.readString("Введите поисковый запрос: ", true);
 
         ExecutionTimer.TimedResult<CustomCollection<T>> timedResult = ExecutionTimer.measureExecutionTime(() ->
-                // TODO: Поиск по коллекции
-                // *** Пример - поиска в коллекции
-                searchStrategy.search(collection, query)
+                searchStrategy.search(collection, actionFieldIndex, query)
         );
 
         CustomCollection<T> results = timedResult.result();
@@ -478,4 +485,6 @@ public class CollectionManager<T> {
             System.out.println("... и еще " + (collectionToShowSize - rowsToShow) + " элемент(ов)");
         }
     }
+
+
 }
